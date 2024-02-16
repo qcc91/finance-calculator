@@ -1,0 +1,76 @@
+h2 {
+  text-align: center;
+  color: #333;
+  }
+  
+section {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.filter-bar {
+  margin: 20px 0;
+  background-color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 99%; 
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 20px;
+
+}
+
+.filter-bar label {
+  margin-right: 10px;
+}
+
+.table-container-holding{
+  width: 100%; 
+  height: 900px;
+  margin: 1 auto; 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 16px; 
+  max-height: 900px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px; 
+}
+
+td, th {
+  border: 1px solid #ddd; 
+  padding: 8px; 
+  text-align: left;
+}
+
+thead {
+  background-color: #f2f2f2; 
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9; 
+}
+
+.table-container-holding table tbody tr.selected {
+  background-color: #cce5ff; 
+}
+
+.delete-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid black;
+  z-index: 100;
+  width: 100px;
+  height: 100px;
+}
+
+

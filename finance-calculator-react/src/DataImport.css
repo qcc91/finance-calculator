@@ -1,0 +1,123 @@
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+.page-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.button-bar {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+}
+
+.button-bar button {
+  height: 30px; 
+}
+
+.excel-uploader-container {
+  width: 100%;
+  margin-bottom: 10px; 
+  height: 50%; 
+  z-index: 50;
+}
+
+.preview-container {
+  width: 98.5%;
+  height: 900px;
+  margin-top: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  overflow: auto; 
+  max-height: 900px; 
+  max-width: 98.5%;
+}
+
+.filter-bar {
+  margin: 20px 0;
+  background-color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 99%; 
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 20px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.filter-bar label {
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.filter-bar .dropzone-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 50;
+}
+
+.filter-bar .dropzone {
+  width: 20%;
+  height: 20px;
+  padding: 3px;
+  border: 2px dashed #cccccc;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; 
+  align-items: center; 
+  margin-top: -5px;
+}
+
+.filter-bar .dropzone-text {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  height: 100%; 
+}
+
+.importing-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+}
+
+.importing-modal p {
+  margin: 0;
+}
+
+.import-success-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+}
+
+.import-success-modal p {
+  margin: 0;
+}

@@ -1,0 +1,14 @@
+  .dropzone {
+    position: relative;
+    z-index: 50;
+  }
+  
+  .file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .file-info button {
+    margin-left: 8px;
+  }

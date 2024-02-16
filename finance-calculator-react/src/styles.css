@@ -1,0 +1,41 @@
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav li {
+  display: inline-block;
+  margin-right: 10px;
+  position: relative;
+}
+
+nav a {
+  text-decoration: none;
+  color: black;
+  padding: 10px;
+}
+
+nav a.active {
+  background-color: #ddd; 
+}
+
+nav ul ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+nav li:hover > ul {
+  display: inherit;
+}
+
+nav ul ul li {
+  display: list-item;
+  float: none;
+}
+
+nav ul ul ul {
+  left: 100%;
+  top: 0;
+}

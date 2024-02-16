@@ -1,0 +1,67 @@
+ .table-container-holding h3 span {
+    margin-right:auto; 
+  }
+  
+ .table-container-holding h3 button {
+    position:relative;
+    margin:10px;
+    left:1150px;
+  }
+  
+ .add-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(239, 234, 234);
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    width: 500px;
+    height: 500px;
+  }
+  
+  .add-modal-input{
+    margin-top: 80px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 8px; 
+  }
+
+  .add-modal-input label {
+    text-align: left; 
+  }
+
+  .add-modal-input input[type="text"],
+  .add-modal-input input[type="date"] {
+    width: 100%; 
+    padding: 2px; 
+    box-sizing: border-box; 
+  }
+  
+  .conflict-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+    z-index: 9999;
+    width: 100px;
+    height: 100px;
+  }
+
+  .success-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid black;
+    z-index: 100;
+    width: 100px;
+    height: 100px;
+  }

@@ -1,0 +1,31 @@
+    .modify-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgb(239, 234, 234);
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      width: 500px;
+      height: 500px;
+    }
+
+    .modify-modal-input{
+        margin-top: 80px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 20px; 
+    }
+    
+    .modify-modal-input label {
+        text-align: left; 
+    }
+    
+    .modify-modal-input input[type="number"],
+    .modify-modal-input input[type="text"] {
+        width: 100%; 
+        padding: 2px; 
+        box-sizing: border-box; 
+    }

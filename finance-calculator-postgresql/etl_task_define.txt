@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS public.etl_task_define
+(
+    task_id character varying(50) COLLATE pg_catalog."default",
+    task_name character varying(50) COLLATE pg_catalog."default",
+    task_time character varying(20) COLLATE pg_catalog."default",
+    task_switch character varying(10) COLLATE pg_catalog."default"
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.etl_task_define
+    OWNER to postgres;
