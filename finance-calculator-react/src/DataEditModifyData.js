@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Axios from 'axios';
+import api from './api/client';
 import './DataEditModifyData.css';
 
 const DataEditModifyData = ({ setShowModifyModal, refreshData, rowData }) => {
@@ -31,7 +31,7 @@ const DataEditModifyData = ({ setShowModifyModal, refreshData, rowData }) => {
     event.preventDefault();
     try {
       // 发送更新数据请求到后端
-      await Axios.put('http://localhost:3000/data/edit/update', {
+      await api.put('/data/edit/update', {
         ...rowData, // 传递原始数据，用于确定要更新的记录
         ...formData // 更新的字段数据
       });

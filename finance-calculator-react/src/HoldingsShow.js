@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './HoldingsShow.css';
-import Axios from 'axios';
+import api from './api/client';
 
 const HoldingsShow = () => {
   const [tableData, setTableData] = useState([]);
@@ -14,7 +14,7 @@ const HoldingsShow = () => {
   });
 
   const fetchData = () => {
-    Axios.get('http://localhost:3000/holdings/show', { params: filters })
+    api.get('/holdings/show', { params: filters })
       .then((response) => {
         if (Array.isArray(response.data)) {
           setTableData(response.data);

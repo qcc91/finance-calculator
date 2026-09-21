@@ -1,0 +1,23 @@
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.log
+
+# React
+node_modules/
+finance-calculator-react/build/
+finance-calculator-react/.env.local
+finance-calculator-react/.env.*.local
+
+# Editors and operating systems
+.idea/
+.DS_Store
+Thumbs.db

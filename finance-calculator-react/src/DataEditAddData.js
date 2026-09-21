@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Axios from 'axios';
+import api from './api/client';
 import './DataEditAddData.css';
 
 const DadaEditAddData = ({ showAddModal, setShowAddModal, refreshData }) => {
@@ -27,17 +27,18 @@ const DadaEditAddData = ({ showAddModal, setShowAddModal, refreshData }) => {
 
   const handleAddModalConfirm = async () => {
     try {
-      const response = await Axios.post('http://localhost:3000/data/edit/add', formData);
-      if (response.status === 200 ) {
-        setConflictModal(true); // 显示冲突提示框
-        console.log('Conflict modal is shown'); // 输出信息到控制台
-      } else if (response.status === 201 && response.data.message === 'Data added successfully!') {
+      const response = await api.post('/data/edit/add', formData);
+      if (response.status === 201 && response.data.message === 'Data added successfully!') {
         setSuccessModal(true);
         refreshData(); // 刷新数据
         console.log('Success modal is shown'); // 输出信息到控制台
       }
     } catch (error) {
-      console.error('Error adding data:', error);
+      if (error.response?.status === 409) {
+        setConflictModal(true);
+      } else {
+        console.error('Error adding data:', error);
+      }
     }
   };
 

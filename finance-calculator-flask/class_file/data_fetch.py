@@ -1,67 +1,83 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb  6 22:04:20 2024
-
-@author: qinxiangyuan
-"""
-
 import pandas as pd
 import baostock as bs
 
+
+def _rows(result):
+    if result.error_code != "0":
+        raise RuntimeError(result.error_msg)
+    values = []
+    while result.next():
+        values.append(dict(zip(result.fields, result.get_row_data())))
+    return values
+
+
 def fetch_stock_data(stock_portfolio):
-    #登录证券宝
-    #login to baostock
-    lg = bs.login()
-    if lg.error_code != '0':
-        raise Exception(f'登录证券宝失败，错误代码：{lg.error_code}, 错误信息：{lg.error_msg}')
-    
+    required = {"trade_date", "stock_symbol", "company", "department", "portfolio_code", "amount", "cost"}
+    missing = sorted(required.difference(stock_portfolio.columns))
+    if missing:
+        raise ValueError(f"Missing required columns: {', '.join(missing)}")
+
+    login = bs.login()
+    if login.error_code != "0":
+        raise RuntimeError(f"BaoStock login failed: {login.error_msg}")
+
     try:
-        #获取证券额外信息
-        #get extra stock info
-        stock_mark = stock_portfolio[['trade_date','stock_symbol']]
-        stock_merge = pd.DataFrame()
-        stock_price_acu = pd.DataFrame()
-        stock_info_acu = pd.DataFrame()
+        price_records = []
+        marks = stock_portfolio[["trade_date", "stock_symbol"]].drop_duplicates()
+        for mark in marks.itertuples(index=False):
+            result = bs.query_history_k_data(
+                mark.stock_symbol,
+                "date,code,close",
+                start_date=str(mark.trade_date),
+                end_date=str(mark.trade_date),
+                frequency="d",
+                adjustflag="3",
+            )
+            rows = _rows(result)
+            if not rows:
+                raise ValueError(f"No market price found for {mark.stock_symbol} on {mark.trade_date}")
+            price_records.extend(rows)
 
-        for i in stock_mark.itertuples(index=False):
-            #查询证券价格信息
-            #query stock close price
-            stock_price = bs.query_history_k_data(i.stock_symbol, "date,code,close", start_date=i.trade_date, end_date=i.trade_date, frequency="d", adjustflag="3")
-            result_list_price = []
-            while (stock_price.error_code == '0') & stock_price.next():
-                result_list_price.append(stock_price.get_row_data())
-                result_price = pd.DataFrame(result_list_price, columns=stock_price.fields)
-                result_price['close'] = result_price['close'].astype(float)
-            stock_price_acu = pd.concat([stock_price_acu, result_price])
+        industry_records = []
+        for symbol in marks["stock_symbol"].drop_duplicates():
+            rows = _rows(bs.query_stock_industry(code=symbol))
+            if not rows:
+                raise ValueError(f"No stock information found for {symbol}")
+            industry_records.append(rows[0])
 
-            #查询证券信息
-            #query stock info
-            stock_info = bs.query_stock_industry(code=i.stock_symbol)
-            result_list_info = []
-            while (stock_info.error_code == '0') & stock_info.next():
-                result_list_info.append(stock_info.get_row_data())
-                result_info = pd.DataFrame(result_list_info, columns=stock_info.fields)
-            stock_info_acu = pd.concat([stock_info_acu, result_info])
-
-        #拼接数据
-        #concatenated data
-        stock_merge = pd.merge(stock_price_acu, stock_info_acu, on='code', how='inner') 
-        stock_merge = stock_merge.drop_duplicates()
-        stock_portfolio_last = stock_portfolio.merge(stock_merge, left_on=['trade_date','stock_symbol'], right_on=['date','code'],how = 'inner')
-
-        #数据处理
-        #data process
-        columns_to_drop = ['date', 'code', 'updateDate', 'industryClassification']
-        stock_portfolio_last.drop(columns=columns_to_drop, inplace=True)
-        new_column_names = {'close': 'close_price', 'code_name': 'stock_name'}
-        stock_portfolio_last.rename(columns=new_column_names, inplace=True)
-        new_column_order = ['trade_date', 'company','department', 'portfolio_code', 'stock_symbol', 'stock_name', 'cost', 'amount', 'close_price', 'industry']
-        stock_portfolio_last = stock_portfolio_last.reindex(columns=new_column_order)
-        stock_portfolio_last.insert(8, 'market_value', stock_portfolio_last['amount'] * stock_portfolio_last['close_price'])    
-
-        return stock_portfolio_last
+        prices = pd.DataFrame(price_records)
+        prices["close"] = pd.to_numeric(prices["close"], errors="raise")
+        industries = pd.DataFrame(industry_records)
+        market_data = prices.merge(industries, on="code", how="inner").drop_duplicates()
+        result = stock_portfolio.merge(
+            market_data,
+            left_on=["trade_date", "stock_symbol"],
+            right_on=["date", "code"],
+            how="inner",
+        )
+        result.drop(
+            columns=["date", "code", "updateDate", "industryClassification"],
+            inplace=True,
+            errors="ignore",
+        )
+        result.rename(columns={"close": "close_price", "code_name": "stock_name"}, inplace=True)
+        result["amount"] = pd.to_numeric(result["amount"], errors="raise")
+        result["cost"] = pd.to_numeric(result["cost"], errors="raise")
+        result["market_value"] = result["amount"] * result["close_price"]
+        return result[
+            [
+                "trade_date",
+                "company",
+                "department",
+                "portfolio_code",
+                "stock_symbol",
+                "stock_name",
+                "cost",
+                "amount",
+                "market_value",
+                "close_price",
+                "industry",
+            ]
+        ]
     finally:
-        #登出证券宝
-        #log out baostock
         bs.logout()

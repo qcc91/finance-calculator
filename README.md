@@ -2,7 +2,7 @@
 
 一个面向股票持仓管理和市场风险分析的全栈项目。系统支持从 Excel 导入持仓、查询和维护持仓记录、按多个层级分析持仓，并使用历史模拟法、参数法和蒙特卡洛法计算 VaR（Value at Risk）。
 
-> 当前项目适合本地学习和功能演示。数据库地址、文件路径和 API 地址仍在代码中配置，部署到其他环境前需要调整。
+> `v1.0.0-pre-refactor` 保留了重构前的版本；当前开发版本采用分层后端和环境变量配置。
 
 ## 主要功能
 
@@ -28,21 +28,28 @@
 
 ## 项目结构
 
+详细的分层规则和数据流见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
+
 ```text
 finance-calculator/
 ├── finance-calculator-react/       # React 前端
 │   ├── public/
 │   └── src/
 ├── finance-calculator-flask/       # Flask API 与计算逻辑
+│   ├── app/
+│   │   ├── repositories/           # 数据库查询
+│   │   ├── routes/                 # HTTP API（Blueprint）
+│   │   ├── services/               # 业务流程与事务
+│   │   ├── config.py               # 环境配置
+│   │   ├── extensions.py           # Flask 扩展
+│   │   └── models.py               # SQLAlchemy 模型
 │   ├── class_file/
 │   │   ├── data_calculate.py       # VaR 计算
 │   │   ├── data_fetch.py           # 行情数据获取
-│   │   ├── data_process.py         # 持仓及结果处理
-│   │   ├── data_validation.py      # 数据冲突检查
-│   │   ├── db_connection.py        # 数据库连接
-│   │   ├── table_models.py         # SQLAlchemy 模型
-│   │   └── task_schedule.py        # 定时任务
-│   └── finance-calculator.py       # Flask 启动入口和 API 路由
+│   │   └── data_process.py         # 纯计算和结果处理
+│   ├── tests/                      # 后端自动化测试
+│   ├── requirements.txt            # 运行依赖
+│   └── finance-calculator.py       # Flask 启动入口
 ├── finance-calculator-postgresql/  # PostgreSQL 建表脚本
 ├── 下载模板(Download template)/   # Excel 导入模板
 └── 存放数据文件夹(The data to be collected)/
@@ -64,9 +71,11 @@ finance-calculator/
 - `finance-calculator-postgresql/history_holding_show.txt`
 - `finance-calculator-postgresql/etl_task_define.txt`
 
-在 `finance-calculator-flask/class_file/db_connection.py` 中，将 `SQLALCHEMY_DATABASE_URI` 修改为本机的 PostgreSQL 连接地址。不要把真实数据库密码提交到 Git 仓库。
+复制根目录的 `.env.example` 为 `.env`，并修改 `DATABASE_URL`。`.env` 已被 Git 忽略，不要把真实数据库密码提交到仓库。
 
-如需启用定时导入，还需要在 `etl_task_define` 表中添加 `task_id` 为 `000001` 的任务记录，并检查 `task_schedule.py` 中 Excel 文件路径是否适用于本机。
+后端启动时会自动读取根目录的 `.env`。
+
+如需启用定时导入，在 `etl_task_define` 表中添加 `task_id` 为 `000001` 的任务记录，将 `RUN_SCHEDULER` 设为 `true`。可通过 `HOLDINGS_FILE` 覆盖默认 Excel 路径。
 
 ### 3. 启动后端
 
@@ -76,7 +85,7 @@ finance-calculator/
 cd finance-calculator-flask
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install Flask flask-cors Flask-SQLAlchemy psycopg2-binary pandas numpy scipy baostock APScheduler openpyxl
+python -m pip install -r requirements.txt
 python finance-calculator.py
 ```
 
@@ -84,12 +93,13 @@ python finance-calculator.py
 
 ### 4. 启动前端
 
-前端目前会向 `http://localhost:3000` 发送 API 请求，因此开发服务器需要使用其他端口。打开新的 PowerShell 窗口并执行：
+前端 API 地址由 `REACT_APP_API_URL` 控制，默认是 `http://localhost:3000`。开发服务器使用 `3001` 端口：
 
 ```powershell
 cd finance-calculator-react
 npm install
-$env:PORT=3001
+$env:PORT="3001"
+$env:REACT_APP_API_URL="http://localhost:3000"
 npm start
 ```
 
@@ -129,20 +139,31 @@ npm start
 
 ## 当前限制
 
-- 项目尚未提供统一的 Python 依赖文件，后端依赖需要手动安装。
-- 数据库连接、模板位置、定时导入文件位置和前端 API 地址仍为本地配置。
-- 后端和定时调度器运行在同一进程，更适合单进程本地环境。
-- 项目尚未加入用户认证、权限控制和自动化测试。
+- 尚未加入用户认证和权限控制。
+- 定时调度器仍由 Flask 进程承载，启用时应只运行一个调度实例。
+- 数据库尚未引入版本化迁移工具，建表脚本更适合新环境初始化。
 - 行情获取依赖 BaoStock 服务和可用的网络连接。
 
 ## 后续改进方向
 
-- 使用环境变量管理数据库连接、文件路径和 API 地址
-- 增加 `requirements.txt` 或 `pyproject.toml`
 - 为数据库变更引入迁移工具
-- 拆分 Flask 路由与业务服务
-- 为导入、持仓维护和 VaR 计算增加测试
+- 扩展行情获取与 VaR 计算的测试覆盖
 - 将定时任务与 Web 服务分离
+
+## 测试
+
+```powershell
+cd finance-calculator-flask
+python -m pip install -r requirements-dev.txt
+pytest -q
+```
+
+前端生产构建验证：
+
+```powershell
+cd finance-calculator-react
+npm run build
+```
 
 ## License
 

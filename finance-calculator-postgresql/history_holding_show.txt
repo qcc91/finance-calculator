@@ -1,19 +1,22 @@
 CREATE TABLE IF NOT EXISTS public.history_holding_show
 (
-    trade_date character varying(10) COLLATE pg_catalog."default",
-    company character varying(200) COLLATE pg_catalog."default",
-    department character varying(200) COLLATE pg_catalog."default",
-    portfolio_code character varying(200) COLLATE pg_catalog."default",
-    stock_symbol character varying(50) COLLATE pg_catalog."default",
-    stock_name character varying(50) COLLATE pg_catalog."default",
-    amount real,
-    cost real,
-    market_value real,
-    close_price real,
-    industry character varying(50) COLLATE pg_catalog."default"
-)
+    trade_date character varying(10) NOT NULL,
+    company character varying(200) NOT NULL,
+    department character varying(200) NOT NULL,
+    portfolio_code character varying(200) NOT NULL,
+    stock_symbol character varying(50) NOT NULL,
+    stock_name character varying(50),
+    amount double precision,
+    cost double precision,
+    market_value double precision,
+    close_price double precision,
+    industry character varying(50),
+    CONSTRAINT history_holding_show_pkey PRIMARY KEY
+        (trade_date, company, department, portfolio_code, stock_symbol)
+);
 
-TABLESPACE pg_default;
+CREATE INDEX IF NOT EXISTS history_holding_show_trade_date_idx
+    ON public.history_holding_show (trade_date);
 
-ALTER TABLE IF EXISTS public.history_holding_show
-    OWNER to postgres;
+CREATE INDEX IF NOT EXISTS history_holding_show_portfolio_idx
+    ON public.history_holding_show (portfolio_code);

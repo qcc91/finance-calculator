@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Axios from 'axios';
+import React, { useState } from 'react';
+import api from './api/client';
 import { Line, Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './MarketVar.css';
@@ -51,13 +51,6 @@ const MarketVar = () => {
         return { x: bin.midPoint, y };
       });
       return { absoluteDensityData: data };
-    };
-
-    // 辅助函数：计算第分位值
-    const calculatePercentile = (data) => {
-      const sortedData = data.slice().sort((a, b) => a - b);
-      const index = Math.ceil((100 - confidenceLevel) / 100 * sortedData.length) - 1;
-      return sortedData[index];
     };
 
     //辅助函数：将从后台获取的数据进行格式变换以适应前台的下钻表格
@@ -216,7 +209,7 @@ const handleConfirm = () => {
   const handleCalculateVar = () => {
     setCalculating(true);
 
-    Axios.post('http://localhost:3000/market/var', {
+    api.post('/market/var', {
       tradeDate,
       varMethod,
       confidenceLevel,
@@ -549,4 +542,3 @@ const handleConfirm = () => {
 };
 
 export default MarketVar;
-

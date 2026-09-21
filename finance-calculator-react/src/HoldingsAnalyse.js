@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Line, Pie } from 'react-chartjs-2';
 import './HoldingsAnalyse.css';
-import axios from 'axios';
+import api from './api/client';
 
 const HoldingsAnalyse = () => {
   const [level, setLevel] = useState('company');
@@ -23,7 +23,7 @@ const HoldingsAnalyse = () => {
   };
 
   const handleSubmit = () => {
-    axios.post('http://localhost:3000/holdings/analyse', {
+    api.post('/holdings/analyse', {
       tradeDate: tradeDate,
       analyseLevel: level,
       department: department,

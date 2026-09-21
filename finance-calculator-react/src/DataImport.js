@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ExcelUploader from './ExcelUploader';
-import Axios from 'axios';
+import api from './api/client';
 import './DataImport.css';
 
 const DataImport = () => {
@@ -16,22 +16,23 @@ const DataImport = () => {
   };
 
   const handleImport = () => {
+    if (!uploadedData?.length) {
+      return;
+    }
     setImporting(true);
 
     // 发送数据到后台
-    Axios.post('http://localhost:3000/data/collect/import', { data: uploadedData })
+    api.post('/data/collect/import', { data: uploadedData })
       .then(response => {
-        if (response.data.message === 'Data conflict. Please Check!') {
-          // 如果有冲突，弹出提示框
-          setConflictAlert(true);
-        } else {
-          // 如果没有冲突，直接导入成功
-          console.log(response.data);
-          setImportSuccess(true);
-        }
+        console.log(response.data);
+        setImportSuccess(true);
       })
       .catch(error => {
-        console.error('Error importing data:', error);
+        if (error.response?.status === 409) {
+          setConflictAlert(true);
+        } else {
+          console.error('Error importing data:', error);
+        }
       })
       .finally(() => {
         // 无论请求成功还是失败，都在最终结束时设置导入状态为 false
@@ -41,7 +42,7 @@ const DataImport = () => {
 
   const handleDownloadTemplate = () => {
     // 发送 GET 请求，从后端获取文件
-    Axios.get('http://localhost:3000/data/collect/import/download/input_template', {
+    api.get('/data/collect/import/download/input_template', {
       responseType: 'arraybuffer', // 告诉 Axios 服务器响应的数据是二进制数据
     })
       .then(response => {
@@ -83,7 +84,7 @@ const DataImport = () => {
           <ExcelUploader onUpload={handleUpload} onDelete={handleDelete} />
         </div>
         <div className="button-bar">
-          <button onClick={handleImport}>导入</button>
+          <button onClick={handleImport} disabled={!uploadedData?.length || importing}>导入</button>
           <button onClick={handleDownloadTemplate}>下载模板</button>
         </div>
       </div>

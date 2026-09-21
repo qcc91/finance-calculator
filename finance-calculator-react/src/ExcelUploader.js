@@ -5,7 +5,6 @@ import * as XLSX from 'xlsx';
 import './ExcelUploader.css';
 
 const ExcelUploader = ({ onUpload, onDelete }) => {
-  const [uploadedData, setUploadedData] = useState(null);
   const [fileName, setFileName] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -25,7 +24,6 @@ const ExcelUploader = ({ onUpload, onDelete }) => {
       // Convert Excel data to JSON format
       const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-      setUploadedData(jsonData);
       onUpload(jsonData);
     };
 
@@ -33,7 +31,6 @@ const ExcelUploader = ({ onUpload, onDelete }) => {
   }, [onUpload]);
 
   const handleDelete = () => {
-    setUploadedData(null);
     setFileName('');
     onDelete();
   };

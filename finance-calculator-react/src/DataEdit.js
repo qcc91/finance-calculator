@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './DataEdit.css';
-import Axios from 'axios';
+import api from './api/client';
 import DataEditAddData from './DataEditAddData'; 
 import DataEditModifyData from './DataEditModifyData';
 import DataEditDeleteData from './DataEditDeleteData';
@@ -43,7 +43,7 @@ const DataEdit = () => {
   }, []); 
 
   const fetchData = () => {
-    Axios.get('http://localhost:3000/data/edit/show', { params: filters })
+    api.get('/data/edit/show', { params: filters })
       .then((response) => {
         if (Array.isArray(response.data)) {
           setTableData(response.data);
@@ -111,7 +111,7 @@ const DataEdit = () => {
 
   const refreshData = async () => {
     try {
-      const response = await Axios.get('http://localhost:3000/data/edit/show',  { params: filters });
+      const response = await api.get('/data/edit/show', { params: filters });
       if (Array.isArray(response.data)) {
         setTableData(response.data);
       } else {

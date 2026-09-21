@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './DataETLTaskShow.css';
-import Axios from 'axios';
+import api from './api/client';
 
 import DataETLTaskModify from './DataETLTaskModify';
 
@@ -20,7 +20,7 @@ const DataETLTaskShow = () => {
   const modifyModalRef = useRef(null);
 
   const fetchData = () => {
-    Axios.get('http://localhost:3000/data/collect/etl/task/show', { params: filters })
+    api.get('/data/collect/etl/task/show', { params: filters })
       .then((response) => {
         if (Array.isArray(response.data)) {
           setTableData(response.data);
@@ -73,7 +73,7 @@ const DataETLTaskShow = () => {
 
   const refreshData = async () => {
     try {
-      const response = await Axios.get('http://localhost:3000/data/collect/etl/task/show',  { params: filters });
+      const response = await api.get('/data/collect/etl/task/show', { params: filters });
       if (Array.isArray(response.data)) {
         setTableData(response.data);
       } else {
@@ -89,7 +89,7 @@ const DataETLTaskShow = () => {
       <h2>ETL任务设置</h2>
       <div className="filter-bar">
         <label htmlFor="taskId">任务ID：</label>
-        <input type="text" id="taskId" name="selectedTaskId" value={filters.selectedStartDate} onChange={handleFilterChange} />
+        <input type="text" id="taskId" name="selectedTaskId" value={filters.selectedTaskId} onChange={handleFilterChange} />
         <label htmlFor="taskName">任务名称：</label>
         <input type="text" id="taskName" name="selectedTaskName" value={filters.selectedTaskName} onChange={handleFilterChange} />
         <button onClick={handleFilterSubmit}>查询</button>
@@ -111,7 +111,7 @@ const DataETLTaskShow = () => {
             <tbody>
               {tableData.map((task, index) => (
                 <tr
-                  key={task.id}
+                  key={task.task_id}
                   className={selectedRow === index ? 'selected' : ''}
                   onClick={() => handleRowClick(index)}
                 >
